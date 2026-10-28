@@ -1,10 +1,5 @@
 {% extends "base.html" %}
 
-{# SEO-ЗАДАНИЕ: сейчас все форматы (свадьбы, корпоративы...) на ОДНОЙ странице. #}
-{# Задание со звёздочкой: под каждый формат лучше иметь отдельную посадочную     #}
-{# страницу (/events/svadby/, /events/korporativy/) со своим h1, текстом и title. #}
-{# Почему это важно для продвижения по запросам «зал для свадьбы в стиле лофт»?  #}
-
 {% block content %}
 <section class="page-head">
   <div class="container">
@@ -21,7 +16,7 @@
         <h2>{{ f.title }}</h2>
         <div>
           <p>{{ f.description }}</p>
-          <a href="{% url 'venue:booking' %}" class="link-arrow">Рассчитать стоимость →</a>
+          {% if f.has_landing %}<a href="{{ f.get_absolute_url }}" class="link-arrow">{{ f.landing_h1|default:f.title }} →</a>{% else %}<a href="{% url 'venue:booking' %}" class="link-arrow">Рассчитать стоимость →</a>{% endif %}
         </div>
       </article>
     {% endfor %}

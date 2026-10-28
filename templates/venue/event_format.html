@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="page-head">
+  <div class="container">
+    <p class="mono muted">{{ format.icon }} {{ format.title }}</p>
+    <h1 class="page-head__title">{{ format.landing_h1|default:format.title }}</h1>
+    <p class="page-head__lead">{{ format.description }}</p>
+    <div class="hero__actions">
+      <a href="#booking" class="btn btn--neon">Забронировать дату</a>
+      <a href="{% url 'venue:menu' %}" class="btn btn--ghost">Банкетное меню и цены</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="container narrow landing-text">
+    {% for block in format.landing_blocks %}
+      {% if block.type == "h2" %}<h2>{{ block.text }}</h2>{% else %}<p>{{ block.text }}</p>{% endif %}
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section section--concrete">
+  <div class="container">
+    <h2 class="section__title">Залы для мероприятия</h2>
+    <div class="metro-map metro-map--compact">
+      {% for hall in halls %}
+        <a href="{{ hall.get_absolute_url }}" class="station" style="--c: {{ hall.line_color }}">
+          <span class="station__line mono">{{ hall.line_number }}</span>
+          <span class="station__dot"></span>
+          <span class="station__body">
+            <span class="station__name">{{ hall.name }}</span>
+            <span class="station__meta mono">до {{ hall.capacity_banquet }} гостей · от {{ hall.price_from }} ₽</span>
+          </span>
+          <span class="station__arrow">→</span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% if packages %}
+<section class="section section--dark">
+  <div class="container">
+    <h2 class="section__title">Популярные банкетные сеты</h2>
+    <div class="packages">
+      {% for p in packages %}{% include "includes/package_card.html" with p=p %}{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section cta" id="booking">
+  <div class="container cta__inner">
+    <div>
+      <h2 class="section__title">Забронировать дату</h2>
+      <p class="muted">Оставьте телефон, перезвоним в течение 15 минут и пригласим на экскурсию по залам.</p>
+      {% for o in others %}<p><a href="{{ o.get_absolute_url }}" class="link-arrow">{{ o.landing_h1|default:o.title }} →</a></p>{% endfor %}
+    </div>
+    {% include "includes/booking_form.html" %}
+  </div>
+</section>
+{% endblock %}

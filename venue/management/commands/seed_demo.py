@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
+from venue.landing_content import LANDINGS
 from venue.models import FAQ, EventFormat, Hall, MenuPackage, Poster, Review
 
 HALLS = [
@@ -266,7 +267,9 @@ class Command(BaseCommand):
         for data in HALLS:
             Hall.objects.create(**data)
         for i, (title, icon, desc) in enumerate(FORMATS):
-            EventFormat.objects.create(title=title, icon=icon, description=desc, order=i)
+            EventFormat.objects.create(
+                title=title, icon=icon, description=desc, order=i, **LANDINGS.get(title, {}),
+            )
         for i, (name, desc, price, featured, items) in enumerate(PACKAGES):
             MenuPackage.objects.create(
                 name=name, description=desc, price_per_person=price,

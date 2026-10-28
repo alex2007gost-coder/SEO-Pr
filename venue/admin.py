@@ -21,8 +21,9 @@ class PosterAdmin(admin.ModelAdmin):
 
 @admin.register(EventFormat)
 class EventFormatAdmin(admin.ModelAdmin):
-    list_display = ("title", "icon", "order")
+    list_display = ("title", "slug", "icon", "order")
     list_editable = ("order",)
+    prepopulated_fields = {"slug": ("title",)}
 
 
 @admin.register(MenuPackage)

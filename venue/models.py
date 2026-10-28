@@ -105,8 +105,20 @@ class EventFormat(models.Model):
     """Формат мероприятия: свадьба, корпоратив, день рождения..."""
 
     title = models.CharField("Название", max_length=100)
+    slug = models.SlugField(
+        "URL", max_length=120, unique=True, blank=True,
+        help_text="Например svadby. Если пусто — сформируется из названия",
+    )
     icon = models.CharField("Иконка (эмодзи или символ)", max_length=8, default="◆")
     description = models.TextField("Описание")
+    landing_h1 = models.CharField("H1 посадочной страницы", max_length=150, blank=True)
+    meta_title = models.CharField("Meta title", max_length=70, blank=True)
+    meta_description = models.CharField("Meta description", max_length=160, blank=True)
+    landing_text = models.TextField(
+        "Текст посадочной страницы", blank=True,
+        help_text="Если заполнен — у формата появляется своя страница /events/<url>/. "
+                  "Строка, начинающаяся с «## », становится подзаголовком h2",
+    )
     order = models.PositiveSmallIntegerField("Порядок", default=0)
 
     class Meta:
@@ -116,6 +128,35 @@ class EventFormat(models.Model):
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = unique_slug(self, self.title)
+        super().save(*args, **kwargs)
+
+    def has_landing(self):
+        return bool(self.landing_text.strip())
+
+    def get_absolute_url(self):
+        return reverse("venue:event_format", kwargs={"slug": self.slug})
+
+    def get_meta_title(self):
+        return self.meta_title or f"{self.title} в лофте в Чите | Подземка"
+
+    def get_meta_description(self):
+        return self.meta_description or self.description[:160]
+
+    def landing_blocks(self):
+        blocks = []
+        for chunk in self.landing_text.replace("\r\n", "\n").split("\n\n"):
+            chunk = chunk.strip()
+            if not chunk:
+                continue
+            if chunk.startswith("## "):
+                blocks.append({"type": "h2", "text": chunk[3:].strip()})
+            else:
+                blocks.append({"type": "p", "text": chunk})
+        return blocks
 
 
 class MenuPackage(models.Model):

@@ -2,6 +2,7 @@ import datetime
 
 from django.contrib import messages
 from django.db.models import Avg, Q
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
@@ -167,6 +168,22 @@ def events(request):
         "halls": Hall.objects.filter(is_active=True),
         **page_meta("events"),
         **breadcrumbs(("Мероприятия", None)),
+    })
+
+
+def event_format(request, slug):
+    event_format = get_object_or_404(EventFormat, slug=slug)
+    if not event_format.has_landing():
+        raise Http404
+    return render(request, "venue/event_format.html", {
+        "format": event_format,
+        "halls": Hall.objects.filter(is_active=True),
+        "packages": MenuPackage.objects.filter(is_featured=True)[:3],
+        "others": [f for f in EventFormat.objects.exclude(pk=event_format.pk) if f.has_landing()],
+        "form": BookingForm(initial={"event_format": event_format}),
+        "meta_title": event_format.get_meta_title(),
+        "meta_description": event_format.get_meta_description(),
+        **breadcrumbs(("Мероприятия", reverse("venue:events")), (event_format.title, None)),
     })
 
 

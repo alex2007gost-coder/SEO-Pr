@@ -16,6 +16,7 @@ urlpatterns = [
 
     path("menu/", views.menu, name="menu"),
     path("events/", views.events, name="events"),
+    path("events/<slug:slug>/", views.event_format, name="event_format"),
     path("afisha/", views.poster_list, name="poster_list"),
     path("afisha/<int:pk>/", views.poster_redirect, name="poster_redirect"),
     path("afisha/<slug:slug>/", views.poster_detail, name="poster_detail"),

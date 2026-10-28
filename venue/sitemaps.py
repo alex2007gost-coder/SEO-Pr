@@ -1,7 +1,7 @@
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
 
-from .models import Hall
+from .models import EventFormat, Hall
 from .views import upcoming_posters
 
 
@@ -37,6 +37,14 @@ class HallSitemap(Sitemap):
 
     def lastmod(self, obj):
         return obj.updated_at
+
+
+class EventFormatSitemap(Sitemap):
+    changefreq = "monthly"
+    priority = 0.8
+
+    def items(self):
+        return [f for f in EventFormat.objects.all() if f.has_landing()]
 
 
 class PosterSitemap(Sitemap):
