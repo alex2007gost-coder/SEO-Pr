@@ -17,8 +17,9 @@
         {% for p in posters %}{% include "includes/poster_card.html" %}{% endfor %}
       </div>
     {% else %}
-      {# SEO-ВОПРОС: пустая страница без контента — «тонкий» контент. Что сюда добавить? #}
-      <p class="muted">Скоро здесь появятся новые события. Следите за нами в соцсетях!</p>
+      <h2 class="section__title">Новые события скоро</h2>
+      <p>Каждый месяц в Подземке проходят квизы, концерты, кинопоказы, арт-вечеринки и конкурсы косплея. Пока мы готовим новую программу, анонсы выходят в <a href="{{ site.telegram }}" target="_blank" rel="noopener">Telegram</a> и <a href="{{ site.vk }}" target="_blank" rel="noopener">ВКонтакте</a>.</p>
+      <p>Хотите провести своё событие под кирпичными сводами? Посмотрите <a href="{% url 'venue:hall_list' %}">банкетные залы</a>, <a href="{% url 'venue:events' %}">форматы мероприятий</a> и <a href="{% url 'venue:menu' %}">банкетное меню</a> или <a href="{% url 'venue:booking' %}">оставьте заявку</a>.</p>
     {% endif %}
   </div>
 </section>

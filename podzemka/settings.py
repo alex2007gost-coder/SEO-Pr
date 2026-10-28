@@ -1,8 +1,5 @@
 """
 Настройки проекта «Подземка» — банкетный зал в стиле лофт / андеграунд.
-
-Учебный проект по SEO. Ищите по проекту комментарии с пометкой «SEO-ЗАДАНИЕ»
-и «ПОДСКАЗКА» — это места, которые вам предстоит доработать (см. README.md).
 """
 
 import os
@@ -40,9 +37,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # ПОДСКАЗКА (задание со звёздочкой): для 301-редиректов со старых URL
-    # можно подключить "django.contrib.redirects.middleware.RedirectFallbackMiddleware"
-    # (плюс приложения django.contrib.sites и django.contrib.redirects).
 ]
 
 ROOT_URLCONF = "podzemka.urls"
@@ -96,14 +90,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 # Данные о заведении — доступны во всех шаблонах как {{ site.name }}, {{ site.phone }} и т.д.
-# ПОДСКАЗКА: эти же данные пригодятся для микроразметки Schema.org (LocalBusiness / EventVenue)
-# и для Open Graph (og:site_name).
 SITE_INFO = {
     "name": "Подземка",
     "tagline": "Банкетный зал в стиле лофт и андеграунд",
-    # ПОДСКАЗКА: юр. лицо — это legalName в микроразметке Organization / LocalBusiness
     "legal_name": "ИП Анисимов Игорь Владимирович",
-    "domain": "podzemka.example",  # SEO-ЗАДАНИЕ: пригодится для абсолютных URL (canonical, og:url)
+    "domain": "podzemka.example",
     "phone": "+7 (900) 123-45-67",
     "phone_raw": "+79001234567",
     "email": "hello@podzemka.example",
@@ -137,7 +128,6 @@ SEO_IDS = {
 
 # Акция: выпускной + скидка на тамаду. Блок сам исчезает с сайта после даты окончания
 # (проверка в venue/context_processors.py).
-# ПОДСКАЗКА: акцию можно разметить через Schema.org Offer с полем validThrough.
 PROMO = {
     "title": "Выпускной в Подземке",
     "discount": 30,
