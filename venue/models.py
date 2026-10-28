@@ -62,6 +62,7 @@ class Hall(models.Model):
 
     order = models.PositiveSmallIntegerField("Порядок", default=0)
     is_active = models.BooleanField("Показывать на сайте", default=True)
+    updated_at = models.DateTimeField("Изменён", auto_now=True)
 
     class Meta:
         verbose_name = "Зал"

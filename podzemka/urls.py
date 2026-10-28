@@ -1,20 +1,17 @@
 from django.contrib import admin
+from django.contrib.sitemaps.views import sitemap
 from django.templatetags.static import static
 from django.urls import include, path
 from django.views.generic import RedirectView, TemplateView
 
-# SEO-ЗАДАНИЕ (sitemap.xml):
-# ПОДСКАЗКА:
-#   from django.contrib.sitemaps.views import sitemap
-#   from venue.sitemaps import StaticViewSitemap, HallSitemap
-#   sitemaps = {"static": StaticViewSitemap, "halls": HallSitemap}
-#   path("sitemap.xml", sitemap, {"sitemaps": sitemaps},
-#        name="django.contrib.sitemaps.views.sitemap"),
-# Файл venue/sitemaps.py уже лежит в проекте — там заготовка с подсказками.
+from venue.sitemaps import HallSitemap, PosterSitemap, StaticViewSitemap
+
+sitemaps = {"static": StaticViewSitemap, "halls": HallSitemap, "afisha": PosterSitemap}
 
 urlpatterns = [
     path("robots.txt", TemplateView.as_view(template_name="robots.txt", content_type="text/plain; charset=utf-8")),
     path("favicon.ico", RedirectView.as_view(url=static("icons/favicon.ico"), permanent=True)),
+    path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="django.contrib.sitemaps.views.sitemap"),
     path("admin/", admin.site.urls),
     path("", include("venue.urls")),
 ]

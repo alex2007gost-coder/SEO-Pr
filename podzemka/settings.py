@@ -28,10 +28,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # SEO-ЗАДАНИЕ (карта сайта):
-    # ПОДСКАЗКА: для генерации sitemap.xml в Django есть встроенный фреймворк.
-    # Нужно добавить сюда "django.contrib.sitemaps" (а при желании ещё
-    # "django.contrib.sites" + SITE_ID = 1, чтобы домен брался из БД).
+    "django.contrib.sitemaps",
     "venue",
 ]
 
