@@ -16,7 +16,7 @@
       </ul>
     </div>
     <div class="hall-hero__img">
-      <img src="{% static hall.image %}" alt="Банкетный зал «{{ hall.name }}» в стиле лофт — интерьер" {% img_size hall.image %} fetchpriority="high">
+      {% with alt="Банкетный зал «"|add:hall.name|add:"» в стиле лофт — интерьер" %}{% picture hall.image alt "(max-width: 900px) 100vw, 570px" False True %}{% endwith %}
     </div>
   </div>
 </section>

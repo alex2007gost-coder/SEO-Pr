@@ -15,7 +15,7 @@
     {% for hall in halls %}
       <article class="hall-card" style="--c: {{ hall.line_color }}">
         <a href="{{ hall.get_absolute_url }}" class="hall-card__img">
-          <img src="{% static hall.image %}" alt="Банкетный зал «{{ hall.name }}» в стиле лофт" {% img_size hall.image %}{% if forloop.counter > 2 %} loading="lazy"{% endif %} decoding="async">
+          {% with alt="Банкетный зал «"|add:hall.name|add:"» в стиле лофт" %}{% picture hall.image alt "(max-width: 800px) 100vw, 600px" forloop.counter|gt:2 %}{% endwith %}
           <span class="hall-card__line mono">Линия {{ hall.line_number }}</span>
         </a>
         <div class="hall-card__body">

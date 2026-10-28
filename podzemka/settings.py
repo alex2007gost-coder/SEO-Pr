@@ -135,7 +135,7 @@ PROMO = {
     "title": "Выпускной в Подземке",
     "discount": 30,
     "host_name": "Гай Манукян",
-    "host_photo": "img/tamada-gai-manukyan.jpg",
+    "host_photo": "img/tamada-gai-manukyan.webp",
     "until": "2026-10-01",       # последний день акции (включительно), формат ГГГГ-ММ-ДД
     "until_human": "1 октября",
 }

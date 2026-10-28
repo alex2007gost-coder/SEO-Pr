@@ -74,7 +74,7 @@
       <a href="{% url 'venue:events' %}" class="link-arrow">Все форматы мероприятий →</a>
     </div>
     <div class="about__img">
-      <img src="{% static 'img/hall-platforma.jpg' %}" alt="Зал «Платформа» в Подземке: кирпичные стены, танцпол и барная зона" {% img_size 'img/hall-platforma.jpg' %} loading="lazy" decoding="async">
+      {% picture 'img/hall-platforma.jpg' "Зал «Платформа» в Подземке: кирпичные стены, танцпол и барная зона" "(max-width: 900px) 100vw, 600px" True %}
     </div>
   </div>
 </section>

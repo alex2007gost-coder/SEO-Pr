@@ -49,7 +49,7 @@ HALLS = [
         "area": 110,
         "price_from": 3800,
         "features": "Арочный потолок\nНеоновая подсветка\nLED-экран 3×2 м\nDJ-пульт",
-        "image": "img/hall-tonnel.webp",
+        "image": "img/hall-tonnel.jpg",
         "order": 2,
     },
     {

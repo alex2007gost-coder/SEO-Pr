@@ -15,7 +15,7 @@
     {% for photo in photos %}
       <figure class="gallery__item">
         <a href="{% static photo.src %}" class="gallery__link" data-lightbox="{{ photo.caption }}">
-          <img src="{% static photo.src %}" alt="{{ photo.alt }}" {% img_size photo.src %}{% if forloop.counter > 2 %} loading="lazy"{% endif %} decoding="async">
+          {% picture photo.src photo.alt "(max-width: 700px) 100vw, 600px" forloop.counter|gt:2 %}
         </a>
         <figcaption class="mono">{{ photo.caption }}</figcaption>
       </figure>
