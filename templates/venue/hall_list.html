@@ -1,12 +1,11 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static seo %}
 
 {% block content %}
 <section class="page-head">
   <div class="container">
     <p class="mono muted">Схема линий</p>
-    <h1 class="page-head__title">Залы</h1>
-    {# SEO-ПОДСКАЗКА: h1 «Залы» слишком общий. Добавьте ключ: «Банкетные залы в стиле лофт». #}
+    <h1 class="page-head__title">Банкетные залы в стиле лофт</h1>
     <p class="page-head__lead">Четыре зала: от камерного «Тоннеля» на 30 гостей до всей площадки на 350.</p>
   </div>
 </section>
@@ -16,9 +15,7 @@
     {% for hall in halls %}
       <article class="hall-card" style="--c: {{ hall.line_color }}">
         <a href="{{ hall.get_absolute_url }}" class="hall-card__img">
-          {# SEO-ЗАДАНИЕ: alt="" у картинки зала. Напишите осмысленный alt: #}
-          {# например: «Банкетный зал {{ hall.name }} в стиле лофт» #}
-          <img src="{% static hall.image %}" alt="">
+          <img src="{% static hall.image %}" alt="Банкетный зал «{{ hall.name }}» в стиле лофт" {% img_size hall.image %}{% if forloop.counter > 2 %} loading="lazy"{% endif %} decoding="async">
           <span class="hall-card__line mono">Линия {{ hall.line_number }}</span>
         </a>
         <div class="hall-card__body">
@@ -30,8 +27,7 @@
             <li><b>{{ hall.area }}</b> м²</li>
             <li>от <b>{{ hall.price_from }}</b> ₽</li>
           </ul>
-          {# SEO-ЗАДАНИЕ (анкоры): «Смотреть» → «Смотреть зал {{ hall.name }}» #}
-          <a href="{{ hall.get_absolute_url }}" class="link-arrow">Смотреть →</a>
+          <a href="{{ hall.get_absolute_url }}" class="link-arrow">Смотреть зал «{{ hall.name }}» →</a>
         </div>
       </article>
     {% endfor %}

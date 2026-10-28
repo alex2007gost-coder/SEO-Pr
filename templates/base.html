@@ -60,10 +60,7 @@
       </div>
     {% endif %}
 
-    {# SEO-ЗАДАНИЕ (хлебные крошки): на внутренних страницах нет навигационной #}
-    {# цепочки «Главная → Залы → Депо». Сделайте блок breadcrumbs и разметьте  #}
-    {# его через Schema.org BreadcrumbList.                                    #}
-    {% block breadcrumbs %}{% endblock %}
+    {% block breadcrumbs %}{% include "includes/breadcrumbs.html" %}{% endblock %}
 
     {% block content %}{% endblock %}
   </main>

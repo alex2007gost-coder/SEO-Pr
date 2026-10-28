@@ -1,4 +1,4 @@
-{% load static %}
+{% load static seo %}
 {% if promo %}
 <section class="promo" id="promo">
   <div class="container promo__inner">
@@ -12,7 +12,7 @@
       {# Исходный файл в корне репозитория назывался                      #}
       {# «jZtXzb4tLohZu9NJ....jpg» — почему такое имя плохо для SEO?      #}
       {# ================================================================ #}
-      <img src="{% static promo.host_photo %}">
+      <img src="{% static promo.host_photo %}" alt="Тамада {{ promo.host_name }} — ведущий выпускного в Подземке" {% img_size promo.host_photo %} loading="lazy" decoding="async">
       <span class="promo__badge">−{{ promo.discount }}%</span>
     </div>
 

@@ -3,6 +3,7 @@ import datetime
 from django.contrib import messages
 from django.db.models import Avg, Q
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 
 from .forms import BookingForm
 from .models import FAQ, EventFormat, Hall, MenuPackage, Poster, Review
@@ -51,6 +52,12 @@ META = {
 }
 
 
+def breadcrumbs(*items):
+    return {"breadcrumbs": [{"name": "Главная", "url": reverse("venue:home")}] + [
+        {"name": name, "url": url} for name, url in items
+    ]}
+
+
 def page_meta(name):
     title, description = META[name]
     return {"meta_title": title, "meta_description": description}
@@ -77,6 +84,7 @@ def hall_list(request):
     return render(request, "venue/hall_list.html", {
         "halls": Hall.objects.filter(is_active=True),
         **page_meta("hall_list"),
+        **breadcrumbs(("Залы", None)),
     })
 
 
@@ -92,6 +100,7 @@ def hall_detail(request, pk):
         "meta_description": hall.get_meta_description(),
         "og_image": hall.og_image(),
         "og_image_alt": f"Банкетный зал «{hall.name}» в Подземке",
+        **breadcrumbs(("Залы", reverse("venue:hall_list")), (hall.name, None)),
     })
 
 
@@ -106,6 +115,7 @@ def poster_list(request):
     return render(request, "venue/poster_list.html", {
         "posters": upcoming_posters(),
         **page_meta("poster_list"),
+        **breadcrumbs(("Афиша", None)),
     })
 
 
@@ -120,6 +130,7 @@ def poster_detail(request, pk):
         "meta_description": poster.get_meta_description(),
         "og_image": poster.og_image(),
         "og_image_alt": poster.title,
+        **breadcrumbs(("Афиша", reverse("venue:poster_list")), (poster.title, None)),
     })
 
 
@@ -127,6 +138,7 @@ def menu(request):
     return render(request, "venue/menu.html", {
         "packages": MenuPackage.objects.all(),
         **page_meta("menu"),
+        **breadcrumbs(("Банкетное меню", None)),
     })
 
 
@@ -135,22 +147,30 @@ def events(request):
         "formats": EventFormat.objects.all(),
         "halls": Hall.objects.filter(is_active=True),
         **page_meta("events"),
+        **breadcrumbs(("Мероприятия", None)),
     })
 
 
 def gallery(request):
-    # Фото галереи пока лежат в static/img. ПОДСКАЗКА: у картинок нет alt — проверьте шаблон!
     photos = [
-        {"src": "img/hall-depo.jpg", "caption": "Зал «Депо»"},
-        {"src": "img/hall-tonnel.webp", "caption": "Зал «Тоннель»"},
-        {"src": "img/hall-platforma.jpg", "caption": "Зал «Платформа»"},
-        {"src": "img/hall-vestibul.jpg", "caption": "Бар «Вестибюль»"},
+        {"src": "img/hall-depo.jpg", "caption": "Зал «Депо»",
+         "alt": "Банкетный зал «Депо»: кирпичные своды, сцена и световая ферма"},
+        {"src": "img/hall-tonnel.webp", "caption": "Зал «Тоннель»",
+         "alt": "Камерный зал «Тоннель» с арочным бетонным потолком и неоновой подсветкой"},
+        {"src": "img/hall-platforma.jpg", "caption": "Зал «Платформа»",
+         "alt": "Зал «Платформа» — большое лофт-пространство с танцполом и баром"},
+        {"src": "img/hall-vestibul.jpg", "caption": "Бар «Вестибюль»",
+         "alt": "Бар «Вестибюль» с бетонной барной стойкой и лаунж-зоной"},
     ]
-    return render(request, "venue/gallery.html", {"photos": photos, **page_meta("gallery")})
+    return render(request, "venue/gallery.html", {
+        "photos": photos, **page_meta("gallery"), **breadcrumbs(("Галерея", None)),
+    })
 
 
 def contacts(request):
-    return render(request, "venue/contacts.html", page_meta("contacts"))
+    return render(request, "venue/contacts.html", {
+        **page_meta("contacts"), **breadcrumbs(("Контакты", None)),
+    })
 
 
 def booking(request):
@@ -166,4 +186,6 @@ def booking(request):
             "comment": request.GET.get("comment", ""),
             "guests": request.GET.get("guests"),
         })
-    return render(request, "venue/booking.html", {"form": form, **page_meta("booking")})
+    return render(request, "venue/booking.html", {
+        "form": form, **page_meta("booking"), **breadcrumbs(("Бронирование", None)),
+    })

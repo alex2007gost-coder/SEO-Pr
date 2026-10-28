@@ -6,12 +6,15 @@
 <section class="page-head">
   <div class="container">
     <p class="mono muted">Кухня и бар</p>
-    <h1 class="page-head__title">Банкетное меню</h1>
+    <h1 class="page-head__title">Банкетное меню и цены</h1>
     <p class="page-head__lead">Сеты от шефа на любой бюджет. Итоговое меню собираем вместе с вами на дегустации.</p>
   </div>
 </section>
 
 <section class="section section--tight">
+  <div class="container">
+    <h2 class="section__title">Банкетные сеты от шефа</h2>
+  </div>
   <div class="container packages">
     {% for p in packages %}
       {% include "includes/package_card.html" with p=p %}

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static seo %}
 
 {% block body_class %}page-home{% endblock %}
 
@@ -13,18 +13,12 @@
   <div class="container hero__inner">
     <p class="hero__kicker mono">↓ спуск −12 м · {{ site.city }}, {{ site.street }}</p>
 
-    {# ================================================================ #}
-    {# SEO-ЗАДАНИЕ (заголовки): на этой странице ДВА h1 — здесь и ниже,  #}
-    {# в блоке «О площадке». Должен быть ровно один h1 на странице, и    #}
-    {# он должен содержать главный ключ. Слово «ПОДЗЕМКА» само по себе   #}
-    {# ничего не говорит поисковику о том, что это банкетный зал.        #}
-    {# ================================================================ #}
-    <h1 class="hero__title glitch" data-text="ПОДЗЕМКА">ПОДЗЕМКА</h1>
+    <h1 class="hero__h1"><span class="hero__h1-key mono">Банкетный зал в стиле лофт в Чите</span><span class="hero__title glitch" data-text="ПОДЗЕМКА">ПОДЗЕМКА</span></h1>
 
     <p class="hero__lead">Банкетный зал в&nbsp;подвале на&nbsp;Курнатовского,&nbsp;17. Свадьбы, дни рождения, корпоративы и&nbsp;концерты на&nbsp;30–350&nbsp;гостей. Своя кухня и&nbsp;бар.</p>
     <div class="hero__actions">
       <a href="{% url 'venue:booking' %}" class="btn btn--neon">Забронировать дату</a>
-      <a href="{% url 'venue:hall_list' %}" class="btn btn--ghost">Смотреть залы →</a>
+      <a href="{% url 'venue:hall_list' %}" class="btn btn--ghost">Смотреть банкетные залы →</a>
     </div>
     <p class="hero__facts mono">Работаем ежедневно до 02:00 · {{ site.phone }}</p>
   </div>
@@ -41,7 +35,7 @@
     <div class="posters">
       {% for p in posters %}{% include "includes/poster_card.html" %}{% endfor %}
     </div>
-    <p class="center"><a href="{% url 'venue:poster_list' %}" class="btn btn--ghost">Вся афиша →</a></p>
+    <p class="center"><a href="{% url 'venue:poster_list' %}" class="btn btn--ghost">Вся афиша событий →</a></p>
   </div>
 </section>
 {% endif %}
@@ -50,8 +44,7 @@
 <section class="section">
   <div class="container">
     <div class="section__head">
-      {# SEO-ПОДСКАЗКА: заголовки разделов — это h2. Хорошо, если в них есть ключи. #}
-      <h2 class="section__title">Схема линий</h2>
+      <h2 class="section__title">Банкетные залы: схема линий</h2>
       <p class="section__sub">Залы можно брать по отдельности или всю площадку целиком.</p>
     </div>
 
@@ -75,15 +68,13 @@
 <section class="section section--concrete">
   <div class="container about">
     <div class="about__text">
-      {# SEO-ЗАДАНИЕ: вот он — второй h1. Исправьте на h2. #}
-      <h1 class="section__title">О площадке</h1>
+      <h2 class="section__title">О площадке</h2>
       <p>Раньше здесь было бомбоубежище и техпомещения. Стены и своды мы оставили как были, добавили свет, звук, кухню и бар.</p>
       <p>Проводим свадьбы, выпускные, корпоративы, дни рождения. Бывают концерты и вечеринки, их смотрите в афише. Звук и свет свои, ведущего и декоратора можно привести своих.</p>
       <a href="{% url 'venue:events' %}" class="link-arrow">Все форматы мероприятий →</a>
     </div>
     <div class="about__img">
-      {# SEO-ЗАДАНИЕ (изображения): у картинки нет alt, width/height и loading="lazy". #}
-      <img src="{% static 'img/hall-platforma.jpg' %}">
+      <img src="{% static 'img/hall-platforma.jpg' %}" alt="Зал «Платформа» в Подземке: кирпичные стены, танцпол и барная зона" {% img_size 'img/hall-platforma.jpg' %} loading="lazy" decoding="async">
     </div>
   </div>
 </section>
@@ -96,8 +87,7 @@
     <div class="formats-list">
       {% for f in formats %}
         <article class="formats-list__item">
-          {# SEO-ЗАДАНИЕ: иерархия заголовков нарушена — после h2 сразу идёт h4. #}
-          <h4>{{ f.title }}</h4>
+          <h3>{{ f.title }}</h3>
           <p>{{ f.description }}</p>
         </article>
       {% endfor %}
@@ -117,9 +107,7 @@
         {% include "includes/package_card.html" with p=p %}
       {% endfor %}
     </div>
-    {# SEO-ЗАДАНИЕ (анкоры ссылок): «Подробнее» / «тут» — плохой текст ссылки. #}
-    {# Сделайте анкор информативным: например, «Всё банкетное меню и цены». #}
-    <p class="center"><a href="{% url 'venue:menu' %}" class="btn btn--ghost">Подробнее</a></p>
+    <p class="center"><a href="{% url 'venue:menu' %}" class="btn btn--ghost">Всё банкетное меню и цены</a></p>
   </div>
 </section>
 {% endif %}

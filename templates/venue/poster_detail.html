@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static seo %}
 
 {# ================================================================== #}
 {# SEO-ЗАДАНИЕ (Schema.org Event, JSON-LD) — положите в extra_head:     #}
@@ -11,14 +11,6 @@
 {# Проверьте в https://validator.schema.org/                            #}
 {# ================================================================== #}
 
-{% block breadcrumbs %}
-  <nav class="container breadcrumbs mono" aria-label="Хлебные крошки">
-    <a href="{% url 'venue:home' %}">Главная</a> <span>/</span>
-    <a href="{% url 'venue:poster_list' %}">Афиша</a> <span>/</span>
-    <span>{{ poster.title }}</span>
-  </nav>
-{% endblock %}
-
 {% block content %}
 <section class="section section--tight">
   <div class="container poster">
@@ -28,8 +20,7 @@
       {% else %}
         <span class="date-badge"><b>{{ poster.date|date:"d" }}</b><span>{{ poster.date|date:"b" }}</span></span>
       {% endif %}
-      {# SEO-ЗАДАНИЕ: картинка весит ~2,5 МБ. Сожмите, добавьте alt/width/height. #}
-      {% if poster.image %}<img src="{% static poster.image %}">{% endif %}
+      {% if poster.image %}<img src="{% static poster.image %}" alt="{{ poster.title }} — афиша события в Подземке" {% img_size poster.image %} fetchpriority="high">{% endif %}
     </div>
 
     <div class="poster__info">

@@ -1,21 +1,12 @@
 {% extends "base.html" %}
-{% load static %}
-
-{% block breadcrumbs %}
-  {# SEO-ПОДСКАЗКА: заготовка крошек. Добавьте разметку BreadcrumbList (JSON-LD или microdata). #}
-  <nav class="container breadcrumbs mono" aria-label="Хлебные крошки">
-    <a href="{% url 'venue:home' %}">Главная</a> <span>/</span>
-    <a href="{% url 'venue:hall_list' %}">Залы</a> <span>/</span>
-    <span>{{ hall.name }}</span>
-  </nav>
-{% endblock %}
+{% load static seo %}
 
 {% block content %}
 <section class="hall-hero" style="--c: {{ hall.line_color }}">
   <div class="container hall-hero__inner">
     <div>
       <p class="hall-hero__line mono"><span class="dot" style="--c: {{ hall.line_color }}"></span>Линия {{ hall.line_number }} · станция</p>
-      <h1 class="hall-hero__title" style="--chars: {{ hall.name|length }}">{{ hall.name }}</h1>
+      <h1 class="hall-hero__title" style="--chars: {{ hall.name|length }}"><small>Банкетный зал</small>{{ hall.name }}</h1>
       <p class="hall-hero__lead">{{ hall.short_description }}</p>
       <ul class="specs specs--big mono">
         <li><b>{{ hall.capacity_banquet }}</b>банкет</li>
@@ -25,8 +16,7 @@
       </ul>
     </div>
     <div class="hall-hero__img">
-      {# SEO-ЗАДАНИЕ: alt, width, height. Первая картинка на экране — lazy не нужен (почему?). #}
-      <img src="{% static hall.image %}">
+      <img src="{% static hall.image %}" alt="Банкетный зал «{{ hall.name }}» в стиле лофт — интерьер" {% img_size hall.image %} fetchpriority="high">
     </div>
   </div>
 </section>
@@ -56,7 +46,6 @@
 {% if others %}
 <section class="section section--concrete">
   <div class="container">
-    {# SEO-ПОДСКАЗКА: перелинковка между залами — это хорошо для внутреннего SEO. #}
     <h2 class="section__title">Другие станции</h2>
     <div class="metro-map metro-map--compact">
       {% for o in others %}
