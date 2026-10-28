@@ -1,0 +1,16 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /booking/?
+Disallow: /*?utm_
+Disallow: /*&utm_
+Disallow: /*?yclid=
+Disallow: /*?gclid=
+Allow: /static/
+
+User-agent: Yandex
+Disallow: /admin/
+Allow: /static/
+Clean-param: utm_source&utm_medium&utm_campaign&utm_content&utm_term&yclid&gclid&from
+Clean-param: hall&guests&comment /booking/
+
+Sitemap: {{ base_url }}/sitemap.xml

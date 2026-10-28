@@ -4,11 +4,13 @@ from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
+from venue.landing_content import LANDINGS
 from venue.models import FAQ, EventFormat, Hall, MenuPackage, Poster, Review
 
 HALLS = [
     {
         "name": "Депо",
+        "slug": "depo",
         "line_number": 1,
         "line_color": "#e4312b",
         "short_description": "Главный зал с кирпичными сводами, сценой и световой фермой.",
@@ -32,6 +34,7 @@ HALLS = [
     },
     {
         "name": "Тоннель",
+        "slug": "tonnel",
         "line_number": 2,
         "line_color": "#f28c28",
         "short_description": "Длинный камерный зал-тоннель с арочным потолком и неоном.",
@@ -47,11 +50,12 @@ HALLS = [
         "area": 110,
         "price_from": 3800,
         "features": "Арочный потолок\nНеоновая подсветка\nLED-экран 3×2 м\nDJ-пульт",
-        "image": "img/hall-tonnel.webp",
+        "image": "img/hall-tonnel.jpg",
         "order": 2,
     },
     {
         "name": "Платформа",
+        "slug": "platforma",
         "line_number": 3,
         "line_color": "#3aa655",
         "short_description": "Самое большое пространство: две зоны, бар и танцпол.",
@@ -73,6 +77,7 @@ HALLS = [
     },
     {
         "name": "Вестибюль",
+        "slug": "vestibul",
         "line_number": 4,
         "line_color": "#8e5bd6",
         "short_description": "Барное пространство для фуршетов, афтепати и welcome-зоны.",
@@ -262,7 +267,9 @@ class Command(BaseCommand):
         for data in HALLS:
             Hall.objects.create(**data)
         for i, (title, icon, desc) in enumerate(FORMATS):
-            EventFormat.objects.create(title=title, icon=icon, description=desc, order=i)
+            EventFormat.objects.create(
+                title=title, icon=icon, description=desc, order=i, **LANDINGS.get(title, {}),
+            )
         for i, (name, desc, price, featured, items) in enumerate(PACKAGES):
             MenuPackage.objects.create(
                 name=name, description=desc, price_per_person=price,

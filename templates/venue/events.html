@@ -1,15 +1,10 @@
 {% extends "base.html" %}
 
-{# SEO-ЗАДАНИЕ: сейчас все форматы (свадьбы, корпоративы...) на ОДНОЙ странице. #}
-{# Задание со звёздочкой: под каждый формат лучше иметь отдельную посадочную     #}
-{# страницу (/events/svadby/, /events/korporativy/) со своим h1, текстом и title. #}
-{# Почему это важно для продвижения по запросам «зал для свадьбы в стиле лофт»?  #}
-
 {% block content %}
 <section class="page-head">
   <div class="container">
     <p class="mono muted">Форматы</p>
-    <h1 class="page-head__title">Мероприятия</h1>
+    <h1 class="page-head__title">Свадьбы, корпоративы и праздники в лофте</h1>
     <p class="page-head__lead">Проводим события любого масштаба — от ужина на 20 человек до концерта на 350.</p>
   </div>
 </section>
@@ -21,7 +16,7 @@
         <h2>{{ f.title }}</h2>
         <div>
           <p>{{ f.description }}</p>
-          <a href="{% url 'venue:booking' %}" class="link-arrow">Рассчитать стоимость →</a>
+          {% if f.has_landing %}<a href="{{ f.get_absolute_url }}" class="link-arrow">{{ f.landing_h1|default:f.title }} →</a>{% else %}<a href="{% url 'venue:booking' %}" class="link-arrow">Рассчитать стоимость →</a>{% endif %}
         </div>
       </article>
     {% endfor %}
@@ -32,7 +27,7 @@
 
 <section class="section section--concrete">
   <div class="container">
-    <h2 class="section__title">Где проводить</h2>
+    <h2 class="section__title">Банкетные залы для мероприятия</h2>
     <div class="metro-map metro-map--compact">
       {% for hall in halls %}
         <a href="{{ hall.get_absolute_url }}" class="station" style="--c: {{ hall.line_color }}">

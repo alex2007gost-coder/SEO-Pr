@@ -1,5 +1,22 @@
+from pathlib import PurePosixPath
+
+from django.contrib.staticfiles import finders
 from django.db import models
 from django.urls import reverse
+from django.utils.formats import date_format
+
+from .utils import unique_slug
+
+
+DEFAULT_OG_IMAGE = "img/og/default.jpg"
+
+
+def og_image_for(image):
+    if image:
+        path = f"img/og/{PurePosixPath(image).stem}.jpg"
+        if finders.find(path):
+            return path
+    return DEFAULT_OG_IMAGE
 
 
 class Hall(models.Model):
@@ -7,15 +24,10 @@ class Hall(models.Model):
 
     name = models.CharField("Название", max_length=100)
 
-    # SEO-ЗАДАНИЕ (ЧПУ — человекопонятные URL):
-    # Сейчас залы открываются по адресу /halls/1/, /halls/2/ ... — это плохо для SEO.
-    # ПОДСКАЗКА: добавьте поле
-    #     slug = models.SlugField("URL", max_length=120, unique=True)
-    # затем: makemigrations -> migrate, заполните slug в админке (или через
-    # prepopulated_fields в admin.py), поменяйте маршрут в venue/urls.py на <slug:slug>
-    # и get_absolute_url() ниже. Хорошие адреса: /halls/depo/, /halls/tonnel/
-    # Будьте внимательны: unique=True на заполненной таблице требует миграции в 2 шага
-    # (или временно null=True / default) — разберитесь, как это сделать.
+    slug = models.SlugField(
+        "URL", max_length=120, unique=True, blank=True,
+        help_text="Латиницей, например depo. Если пусто — сформируется из названия",
+    )
 
     line_color = models.CharField(
         "Цвет линии (HEX)", max_length=7, default="#e4312b",
@@ -36,15 +48,18 @@ class Hall(models.Model):
         "Картинка (путь в static)", max_length=200, default="img/hall-depo.jpg",
     )
 
-    # SEO-ЗАДАНИЕ (управляемые мета-теги):
-    # ПОДСКАЗКА: хорошая практика — дать контент-менеджеру возможность задать
-    # title и description для каждой страницы вручную:
-    #     meta_title = models.CharField(max_length=70, blank=True)
-    #     meta_description = models.CharField(max_length=160, blank=True)
-    # а в шаблоне выводить их, если заполнены, иначе — сгенерированные.
+    meta_title = models.CharField(
+        "Meta title", max_length=70, blank=True,
+        help_text="Если пусто — сформируется автоматически",
+    )
+    meta_description = models.CharField(
+        "Meta description", max_length=160, blank=True,
+        help_text="Если пусто — сформируется автоматически",
+    )
 
     order = models.PositiveSmallIntegerField("Порядок", default=0)
     is_active = models.BooleanField("Показывать на сайте", default=True)
+    updated_at = models.DateTimeField("Изменён", auto_now=True)
 
     class Meta:
         verbose_name = "Зал"
@@ -54,20 +69,56 @@ class Hall(models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = unique_slug(self, self.name)
+        super().save(*args, **kwargs)
+
     def get_absolute_url(self):
-        # ПОДСКАЗКА: после добавления slug замените pk=self.pk на slug=self.slug
-        return reverse("venue:hall_detail", kwargs={"pk": self.pk})
+        return reverse("venue:hall_detail", kwargs={"slug": self.slug})
 
     def features_list(self):
         return [f.strip() for f in self.features.splitlines() if f.strip()]
+
+    def get_meta_title(self):
+        if self.meta_title:
+            return self.meta_title
+        return f"Зал «{self.name}» — банкет до {self.capacity_banquet} гостей в Чите | Подземка"
+
+    def og_image(self):
+        return og_image_for(self.image)
+
+    def get_meta_description(self):
+        if self.meta_description:
+            return self.meta_description
+        specs = (
+            f"Банкет до {self.capacity_banquet} гостей, фуршет до {self.capacity_buffet}, "
+            f"{self.area} м², от {self.price_from} ₽ за гостя."
+        )
+        text = f"{self.short_description} {specs} Забронируйте онлайн!"
+        if len(text) > 160:
+            text = f"Лофт-зал «{self.name}» в центре Читы. {specs} Забронируйте онлайн!"
+        return text
 
 
 class EventFormat(models.Model):
     """Формат мероприятия: свадьба, корпоратив, день рождения..."""
 
     title = models.CharField("Название", max_length=100)
+    slug = models.SlugField(
+        "URL", max_length=120, unique=True, blank=True,
+        help_text="Например svadby. Если пусто — сформируется из названия",
+    )
     icon = models.CharField("Иконка (эмодзи или символ)", max_length=8, default="◆")
     description = models.TextField("Описание")
+    landing_h1 = models.CharField("H1 посадочной страницы", max_length=150, blank=True)
+    meta_title = models.CharField("Meta title", max_length=70, blank=True)
+    meta_description = models.CharField("Meta description", max_length=160, blank=True)
+    landing_text = models.TextField(
+        "Текст посадочной страницы", blank=True,
+        help_text="Если заполнен — у формата появляется своя страница /events/<url>/. "
+                  "Строка, начинающаяся с «## », становится подзаголовком h2",
+    )
     order = models.PositiveSmallIntegerField("Порядок", default=0)
 
     class Meta:
@@ -77,6 +128,35 @@ class EventFormat(models.Model):
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = unique_slug(self, self.title)
+        super().save(*args, **kwargs)
+
+    def has_landing(self):
+        return bool(self.landing_text.strip())
+
+    def get_absolute_url(self):
+        return reverse("venue:event_format", kwargs={"slug": self.slug})
+
+    def get_meta_title(self):
+        return self.meta_title or f"{self.title} в лофте в Чите | Подземка"
+
+    def get_meta_description(self):
+        return self.meta_description or self.description[:160]
+
+    def landing_blocks(self):
+        blocks = []
+        for chunk in self.landing_text.replace("\r\n", "\n").split("\n\n"):
+            chunk = chunk.strip()
+            if not chunk:
+                continue
+            if chunk.startswith("## "):
+                blocks.append({"type": "h2", "text": chunk[3:].strip()})
+            else:
+                blocks.append({"type": "p", "text": chunk})
+        return blocks
 
 
 class MenuPackage(models.Model):
@@ -109,9 +189,6 @@ class Review(models.Model):
     created_at = models.DateField("Дата")
     is_published = models.BooleanField("Опубликован", default=True)
 
-    # ПОДСКАЗКА: отзывы с оценками — отличный повод для микроразметки
-    # Schema.org AggregateRating / Review (звёздочки в сниппете).
-
     class Meta:
         verbose_name = "Отзыв"
         verbose_name_plural = "Отзывы"
@@ -125,8 +202,6 @@ class FAQ(models.Model):
     question = models.CharField("Вопрос", max_length=255)
     answer = models.TextField("Ответ")
     order = models.PositiveSmallIntegerField("Порядок", default=0)
-
-    # ПОДСКАЗКА: вопросы-ответы можно разметить через Schema.org FAQPage (JSON-LD).
 
     class Meta:
         verbose_name = "Вопрос-ответ"
@@ -174,6 +249,10 @@ class Poster(models.Model):
     """Событие в афише: квиз, концерт, вечеринка — с конкретной датой."""
 
     title = models.CharField("Название", max_length=150)
+    slug = models.SlugField(
+        "URL", max_length=120, unique=True, blank=True,
+        help_text="Латиницей. Если пусто — сформируется из названия",
+    )
     topic = models.CharField("Тема", max_length=150, blank=True)
     organizer = models.CharField("Организатор", max_length=150, blank=True)
     date = models.DateField("Дата", help_text="Для регулярного события — дата первого проведения")
@@ -187,13 +266,6 @@ class Poster(models.Model):
     image = models.CharField("Картинка (путь в static)", max_length=200, blank=True)
     is_published = models.BooleanField("Опубликовано", default=True)
 
-    # SEO-ЗАДАНИЕ (ЧПУ): как и у залов, адрес события сейчас /afisha/1/.
-    # Хороший адрес: /afisha/kviz-60-sekund-kompyuternye-igry/ — добавьте slug.
-    # ПОДСКАЗКА: у события в афише есть всё для Schema.org Event:
-    # name, startDate, location (Place + PostalAddress), image, organizer, description.
-    # Такая разметка может дать расширенный сниппет с датой в выдаче.
-    # Для регулярных событий (schedule) в Schema.org есть eventSchedule (тип Schedule).
-
     class Meta:
         verbose_name = "Событие афиши"
         verbose_name_plural = "Афиша"
@@ -202,5 +274,37 @@ class Poster(models.Model):
     def __str__(self):
         return f"{self.title} ({self.date:%d.%m.%Y})"
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = unique_slug(self, self.title)
+        super().save(*args, **kwargs)
+
     def get_absolute_url(self):
-        return reverse("venue:poster_detail", kwargs={"pk": self.pk})
+        return reverse("venue:poster_detail", kwargs={"slug": self.slug})
+
+    def og_image(self):
+        return og_image_for(self.image)
+
+    def when_text(self, with_time=True):
+        if self.schedule:
+            text = self.schedule.lower()
+        else:
+            text = date_format(self.date, "j E")
+        if with_time and self.time:
+            text += f" в {self.time:%H:%M}"
+        return text
+
+    def get_meta_title(self):
+        for variant in (
+            f"{self.title} — {self.when_text()}, Чита | Подземка",
+            f"{self.title} — {self.when_text(False)}, Чита | Подземка",
+        ):
+            if len(variant) <= 65:
+                return variant
+        return f"{self.title} — {self.when_text(False)} | Подземка"
+
+    def get_meta_description(self):
+        text = f"{self.short_description} {self.when_text().capitalize()}, Подземка, Курнатовского, 17. Забронируйте стол!"
+        if len(text) > 160:
+            text = f"{self.title} в Подземке: {self.when_text()}, Чита, Курнатовского, 17. Подробности и бронирование стола на сайте!"
+        return text

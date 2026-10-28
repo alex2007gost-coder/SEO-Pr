@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block robots %}noindex, follow{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div class="container">
+    <p class="mono muted">Ошибка 404 · поезд дальше не идёт</p>
+    <h1 class="page-head__title">Станция не найдена</h1>
+    <p class="page-head__lead">Похоже, вы свернули не в тот тоннель: такой страницы нет или её перенесли. Выберите, куда ехать дальше.</p>
+    <div class="hero__actions">
+      <a href="{% url 'venue:home' %}" class="btn btn--neon">На главную</a>
+      <a href="{% url 'venue:hall_list' %}" class="btn btn--ghost">Банкетные залы</a>
+      <a href="{% url 'venue:poster_list' %}" class="btn btn--ghost">Афиша событий</a>
+    </div>
+  </div>
+</section>
+
+{% if halls %}
+<section class="section section--concrete">
+  <div class="container">
+    <h2 class="section__title">Схема линий</h2>
+    <div class="metro-map metro-map--compact">
+      {% for hall in halls %}
+        <a href="{{ hall.get_absolute_url }}" class="station" style="--c: {{ hall.line_color }}">
+          <span class="station__line mono">{{ hall.line_number }}</span>
+          <span class="station__dot"></span>
+          <span class="station__body">
+            <span class="station__name">{{ hall.name }}</span>
+            <span class="station__meta mono">до {{ hall.capacity_banquet }} гостей</span>
+          </span>
+          <span class="station__arrow">→</span>
+        </a>
+      {% endfor %}
+    </div>
+    <p><a href="{% url 'venue:menu' %}" class="link-arrow">Банкетное меню и цены →</a> · <a href="{% url 'venue:contacts' %}" class="link-arrow">Контакты и схема проезда →</a></p>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

@@ -1,26 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
-
-{# ================================================================== #}
-{# SEO-ЗАДАНИЕ: динамические title и description события, например:   #}
-{#   «{{ poster.title }}: квиз по теме «{{ poster.topic }}» — {{ poster.date|date:"j E" }} | Подземка» #}
-{#                                                                      #}
-{# SEO-ЗАДАНИЕ (Schema.org Event, JSON-LD) — положите в extra_head:     #}
-{#   "@type": "Event", "name", "startDate" (ISO 8601, с временем и      #}
-{#   часовым поясом +09:00 — это Чита!), "eventStatus",                 #}
-{#   "eventAttendanceMode": OfflineEventAttendanceMode,                  #}
-{#   "location": {"@type": "Place", "name", "address": PostalAddress}, #}
-{#   "image", "description", "organizer".                               #}
-{# Проверьте в https://validator.schema.org/                            #}
-{# ================================================================== #}
-
-{% block breadcrumbs %}
-  <nav class="container breadcrumbs mono" aria-label="Хлебные крошки">
-    <a href="{% url 'venue:home' %}">Главная</a> <span>/</span>
-    <a href="{% url 'venue:poster_list' %}">Афиша</a> <span>/</span>
-    <span>{{ poster.title }}</span>
-  </nav>
-{% endblock %}
+{% load static seo %}
 
 {% block content %}
 <section class="section section--tight">
@@ -31,8 +10,7 @@
       {% else %}
         <span class="date-badge"><b>{{ poster.date|date:"d" }}</b><span>{{ poster.date|date:"b" }}</span></span>
       {% endif %}
-      {# SEO-ЗАДАНИЕ: картинка весит ~2,5 МБ. Сожмите, добавьте alt/width/height. #}
-      {% if poster.image %}<img src="{% static poster.image %}">{% endif %}
+      {% if poster.image %}<img src="{% static poster.image %}" alt="{{ poster.title }} — афиша события в Подземке" {% img_size poster.image %} fetchpriority="high">{% endif %}
     </div>
 
     <div class="poster__info">
