@@ -11,6 +11,7 @@ def site_info(request):
     promo_active = datetime.date.today() <= datetime.date.fromisoformat(promo["until"])
     return {
         "site": settings.SITE_INFO,
+        "base_url": request.build_absolute_uri("/").rstrip("/"),
         "nav_halls": Hall.objects.filter(is_active=True),
         "promo": promo if promo_active else None,
     }

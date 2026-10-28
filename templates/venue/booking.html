@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 
-{# SEO-ЗАДАНИЕ: служебная страница с формой. Решите, нужна ли она в индексе.  #}
-{# Если нет — закройте через <meta name="robots" content="noindex, follow">.    #}
-{# Почему в этом случае лучше noindex, а не Disallow в robots.txt?             #}
+{% block robots %}noindex, follow{% endblock %}
 
 {% block content %}
 <section class="page-head">

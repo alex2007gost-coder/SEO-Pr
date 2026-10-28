@@ -1,5 +1,7 @@
 from django.contrib import admin
+from django.templatetags.static import static
 from django.urls import include, path
+from django.views.generic import RedirectView
 
 # SEO-ЗАДАНИЕ (robots.txt):
 # ПОДСКАЗКА: robots.txt должен открываться по адресу /robots.txt (строго в корне сайта).
@@ -21,6 +23,7 @@ from django.urls import include, path
 # Файл venue/sitemaps.py уже лежит в проекте — там заготовка с подсказками.
 
 urlpatterns = [
+    path("favicon.ico", RedirectView.as_view(url=static("icons/favicon.ico"), permanent=True)),
     path("admin/", admin.site.urls),
     path("", include("venue.urls")),
 ]

@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from django.utils.formats import date_format
 
 
 class Hall(models.Model):
@@ -36,12 +37,14 @@ class Hall(models.Model):
         "Картинка (путь в static)", max_length=200, default="img/hall-depo.jpg",
     )
 
-    # SEO-ЗАДАНИЕ (управляемые мета-теги):
-    # ПОДСКАЗКА: хорошая практика — дать контент-менеджеру возможность задать
-    # title и description для каждой страницы вручную:
-    #     meta_title = models.CharField(max_length=70, blank=True)
-    #     meta_description = models.CharField(max_length=160, blank=True)
-    # а в шаблоне выводить их, если заполнены, иначе — сгенерированные.
+    meta_title = models.CharField(
+        "Meta title", max_length=70, blank=True,
+        help_text="Если пусто — сформируется автоматически",
+    )
+    meta_description = models.CharField(
+        "Meta description", max_length=160, blank=True,
+        help_text="Если пусто — сформируется автоматически",
+    )
 
     order = models.PositiveSmallIntegerField("Порядок", default=0)
     is_active = models.BooleanField("Показывать на сайте", default=True)
@@ -60,6 +63,23 @@ class Hall(models.Model):
 
     def features_list(self):
         return [f.strip() for f in self.features.splitlines() if f.strip()]
+
+    def get_meta_title(self):
+        if self.meta_title:
+            return self.meta_title
+        return f"Зал «{self.name}» — банкет до {self.capacity_banquet} гостей в Чите | Подземка"
+
+    def get_meta_description(self):
+        if self.meta_description:
+            return self.meta_description
+        specs = (
+            f"Банкет до {self.capacity_banquet} гостей, фуршет до {self.capacity_buffet}, "
+            f"{self.area} м², от {self.price_from} ₽ за гостя."
+        )
+        text = f"{self.short_description} {specs} Забронируйте онлайн!"
+        if len(text) > 160:
+            text = f"Лофт-зал «{self.name}» в центре Читы. {specs} Забронируйте онлайн!"
+        return text
 
 
 class EventFormat(models.Model):
@@ -204,3 +224,27 @@ class Poster(models.Model):
 
     def get_absolute_url(self):
         return reverse("venue:poster_detail", kwargs={"pk": self.pk})
+
+    def when_text(self, with_time=True):
+        if self.schedule:
+            text = self.schedule.lower()
+        else:
+            text = date_format(self.date, "j E")
+        if with_time and self.time:
+            text += f" в {self.time:%H:%M}"
+        return text
+
+    def get_meta_title(self):
+        for variant in (
+            f"{self.title} — {self.when_text()}, Чита | Подземка",
+            f"{self.title} — {self.when_text(False)}, Чита | Подземка",
+        ):
+            if len(variant) <= 65:
+                return variant
+        return f"{self.title} — {self.when_text(False)} | Подземка"
+
+    def get_meta_description(self):
+        text = f"{self.short_description} {self.when_text().capitalize()}, Подземка, Курнатовского, 17. Забронируйте стол!"
+        if len(text) > 160:
+            text = f"{self.title} в Подземке: {self.when_text()}, Чита, Курнатовского, 17. Подробности и бронирование стола на сайте!"
+        return text

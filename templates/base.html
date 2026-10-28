@@ -1,37 +1,23 @@
 {% load static %}<!DOCTYPE html>
-{# SEO-ЗАДАНИЕ: язык страницы. Какой атрибут lang должен быть у сайта на русском? #}
-<html>
+<html lang="ru">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  {# ================================================================== #}
-  {# SEO-ЗАДАНИЕ (title): сейчас у ВСЕХ страниц одинаковый заголовок.     #}
-  {# ПОДСКАЗКА: каждый шаблон-наследник должен переопределять блок title. #}
-  {# Шаблон хорошего title: «Главный ключ — уточнение | Подземка»,        #}
-  {# длина ~50-65 символов, уникален для каждой страницы.                 #}
-  {# ================================================================== #}
-  <title>{% block title %}Подземка{% endblock %}</title>
+  <title>{{ meta_title }}</title>
+  <meta name="description" content="{{ meta_description }}">
+  {% if not hide_canonical %}<link rel="canonical" href="{{ base_url }}{{ request.path }}">{% endif %}
+  <meta name="robots" content="{% block robots %}index, follow{% endblock %}">
 
-  {# SEO-ЗАДАНИЕ (description): мета-описания нет вообще.                 #}
-  {# ПОДСКАЗКА: <meta name="description" content="...">, 120-160 символов, #}
-  {# уникально для каждой страницы. Заведите блок {% block description %}. #}
-
-  {# SEO-ЗАДАНИЕ (canonical): добавьте <link rel="canonical" href="...">  #}
-  {# ПОДСКАЗКА: абсолютный URL можно получить через                         #}
-  {# {{ request.scheme }}://{{ request.get_host }}{{ request.path }}        #}
+  <link rel="icon" href="{% static 'icons/favicon.ico' %}" sizes="32x32">
+  <link rel="icon" href="{% static 'icons/favicon.svg' %}" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="{% static 'icons/apple-touch-icon.png' %}">
+  <meta name="theme-color" content="#0d0d0e">
 
   {# SEO-ЗАДАНИЕ (Open Graph / Twitter Cards): при отправке ссылки в       #}
   {# Telegram/VK сейчас нет красивого превью. Нужны og:title, og:description,#}
   {# og:image (абсолютный URL, 1200×630), og:url, og:type, og:site_name,   #}
   {# og:locale, а также twitter:card.                                       #}
-
-  {# SEO-ЗАДАНИЕ (robots): как запретить индексацию отдельной страницы?     #}
-  {# ПОДСКАЗКА: заведите {% block robots %}{% endblock %} и переопределите  #}
-  {# его на служебных страницах: <meta name="robots" content="noindex, follow"> #}
-
-  {# SEO-ЗАДАНИЕ (favicon): у сайта нет иконки. Нужны favicon.ico / .svg,  #}
-  {# apple-touch-icon и (по желанию) site.webmanifest + theme-color.        #}
 
   {# SEO-ЗАДАНИЕ (верификация): сюда же добавляются мета-теги подтверждения #}
   {# прав в Яндекс.Вебмастере и Google Search Console.                     #}
