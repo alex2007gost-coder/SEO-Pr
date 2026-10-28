@@ -32,8 +32,8 @@
   <meta name="twitter:description" content="{{ meta_description }}">
   <meta name="twitter:image" content="{{ base_url }}{% static og_image_path %}">
 
-  {# SEO-ЗАДАНИЕ (верификация): сюда же добавляются мета-теги подтверждения #}
-  {# прав в Яндекс.Вебмастере и Google Search Console.                     #}
+  {% if seo_ids.yandex_verification %}<meta name="yandex-verification" content="{{ seo_ids.yandex_verification }}">{% endif %}
+  {% if seo_ids.google_verification %}<meta name="google-site-verification" content="{{ seo_ids.google_verification }}">{% endif %}
 
   {# ПОДСКАЗКА (скорость): preconnect к Google Fonts уже есть — это хорошо. #}
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -70,6 +70,17 @@
   <script src="{% static 'js/main.js' %}"></script>
   {% block extra_js %}{% endblock %}
 
-  {# SEO-ЗАДАНИЕ (аналитика): подключите Яндекс.Метрику (с целью на отправку формы) #}
+  {% if seo_ids.metrika_id %}
+  <script>
+    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+    m[i].l=1*new Date();
+    for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+    k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+    (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+    ym({{ seo_ids.metrika_id }}, "init", {clickmap: true, trackLinks: true, accurateTrackBounce: true, webvisor: true});
+    {% for message in messages %}{% if message.level_tag == "success" %}ym({{ seo_ids.metrika_id }}, "reachGoal", "{{ seo_ids.metrika_goal }}");{% endif %}{% endfor %}
+  </script>
+  <noscript><div><img src="https://mc.yandex.ru/watch/{{ seo_ids.metrika_id }}" style="position:absolute; left:-9999px;" alt=""></div></noscript>
+  {% endif %}
 </body>
 </html>

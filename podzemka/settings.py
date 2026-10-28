@@ -128,6 +128,13 @@ SITE_INFO = {
     "vk": "https://vk.com/podzemka_example",
 }
 
+SEO_IDS = {
+    "yandex_verification": os.environ.get("YANDEX_VERIFICATION", ""),
+    "google_verification": os.environ.get("GOOGLE_SITE_VERIFICATION", ""),
+    "metrika_id": os.environ.get("YANDEX_METRIKA_ID", ""),
+    "metrika_goal": "booking_sent",
+}
+
 # Акция: выпускной + скидка на тамаду. Блок сам исчезает с сайта после даты окончания
 # (проверка в venue/context_processors.py).
 # ПОДСКАЗКА: акцию можно разметить через Schema.org Offer с полем validThrough.
