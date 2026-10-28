@@ -1,17 +1,7 @@
 from django.contrib import admin
 from django.templatetags.static import static
 from django.urls import include, path
-from django.views.generic import RedirectView
-
-# SEO-ЗАДАНИЕ (robots.txt):
-# ПОДСКАЗКА: robots.txt должен открываться по адресу /robots.txt (строго в корне сайта).
-# Самый простой способ — TemplateView с content_type="text/plain":
-#
-#   from django.views.generic import TemplateView
-#   path("robots.txt", TemplateView.as_view(
-#       template_name="robots.txt", content_type="text/plain")),
-#
-# Сам шаблон templates/robots.txt нужно создать. Не забудьте строку Sitemap: ...
+from django.views.generic import RedirectView, TemplateView
 
 # SEO-ЗАДАНИЕ (sitemap.xml):
 # ПОДСКАЗКА:
@@ -23,6 +13,7 @@ from django.views.generic import RedirectView
 # Файл venue/sitemaps.py уже лежит в проекте — там заготовка с подсказками.
 
 urlpatterns = [
+    path("robots.txt", TemplateView.as_view(template_name="robots.txt", content_type="text/plain; charset=utf-8")),
     path("favicon.ico", RedirectView.as_view(url=static("icons/favicon.ico"), permanent=True)),
     path("admin/", admin.site.urls),
     path("", include("venue.urls")),
