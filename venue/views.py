@@ -90,6 +90,8 @@ def hall_detail(request, pk):
         "form": form,
         "meta_title": hall.get_meta_title(),
         "meta_description": hall.get_meta_description(),
+        "og_image": hall.og_image(),
+        "og_image_alt": f"Банкетный зал «{hall.name}» в Подземке",
     })
 
 
@@ -116,6 +118,8 @@ def poster_detail(request, pk):
         "is_past": not poster.schedule and poster.date < datetime.date.today(),
         "meta_title": poster.get_meta_title(),
         "meta_description": poster.get_meta_description(),
+        "og_image": poster.og_image(),
+        "og_image_alt": poster.title,
     })
 
 

@@ -1,6 +1,20 @@
+from pathlib import PurePosixPath
+
+from django.contrib.staticfiles import finders
 from django.db import models
 from django.urls import reverse
 from django.utils.formats import date_format
+
+
+DEFAULT_OG_IMAGE = "img/og/default.jpg"
+
+
+def og_image_for(image):
+    if image:
+        path = f"img/og/{PurePosixPath(image).stem}.jpg"
+        if finders.find(path):
+            return path
+    return DEFAULT_OG_IMAGE
 
 
 class Hall(models.Model):
@@ -68,6 +82,9 @@ class Hall(models.Model):
         if self.meta_title:
             return self.meta_title
         return f"Зал «{self.name}» — банкет до {self.capacity_banquet} гостей в Чите | Подземка"
+
+    def og_image(self):
+        return og_image_for(self.image)
 
     def get_meta_description(self):
         if self.meta_description:
@@ -224,6 +241,9 @@ class Poster(models.Model):
 
     def get_absolute_url(self):
         return reverse("venue:poster_detail", kwargs={"pk": self.pk})
+
+    def og_image(self):
+        return og_image_for(self.image)
 
     def when_text(self, with_time=True):
         if self.schedule:
