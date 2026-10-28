@@ -9,6 +9,7 @@ from venue.models import FAQ, EventFormat, Hall, MenuPackage, Poster, Review
 HALLS = [
     {
         "name": "Депо",
+        "slug": "depo",
         "line_number": 1,
         "line_color": "#e4312b",
         "short_description": "Главный зал с кирпичными сводами, сценой и световой фермой.",
@@ -32,6 +33,7 @@ HALLS = [
     },
     {
         "name": "Тоннель",
+        "slug": "tonnel",
         "line_number": 2,
         "line_color": "#f28c28",
         "short_description": "Длинный камерный зал-тоннель с арочным потолком и неоном.",
@@ -52,6 +54,7 @@ HALLS = [
     },
     {
         "name": "Платформа",
+        "slug": "platforma",
         "line_number": 3,
         "line_color": "#3aa655",
         "short_description": "Самое большое пространство: две зоны, бар и танцпол.",
@@ -73,6 +76,7 @@ HALLS = [
     },
     {
         "name": "Вестибюль",
+        "slug": "vestibul",
         "line_number": 4,
         "line_color": "#8e5bd6",
         "short_description": "Барное пространство для фуршетов, афтепати и welcome-зоны.",

@@ -16,7 +16,4 @@ urlpatterns = [
     path("", include("venue.urls")),
 ]
 
-# SEO-ЗАДАНИЕ (страница 404):
-# ПОДСКАЗКА: Django сам покажет templates/404.html, если DEBUG = False.
-# Создайте такой шаблон (в стиле сайта, с навигацией и ссылкой на главную).
-# Проверить: запустите с DJANGO_DEBUG=0 и флагом --insecure (см. README).
+handler404 = "venue.views.page_not_found"

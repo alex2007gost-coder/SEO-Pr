@@ -88,8 +88,13 @@ def hall_list(request):
     })
 
 
-def hall_detail(request, pk):
+def hall_redirect(request, pk):
     hall = get_object_or_404(Hall, pk=pk, is_active=True)
+    return redirect(hall, permanent=True)
+
+
+def hall_detail(request, slug):
+    hall = get_object_or_404(Hall, slug=slug, is_active=True)
     others = Hall.objects.filter(is_active=True).exclude(pk=hall.pk)
     form = BookingForm(initial={"hall": hall})
     return render(request, "venue/hall_detail.html", {
@@ -119,10 +124,13 @@ def poster_list(request):
     })
 
 
-def poster_detail(request, pk):
-    # SEO-ВОПРОС: что делать со страницей события, когда оно уже прошло?
-    # Отдавать 404? 410? Оставить в архиве с пометкой «событие прошло»?
+def poster_redirect(request, pk):
     poster = get_object_or_404(Poster, pk=pk, is_published=True)
+    return redirect(poster, permanent=True)
+
+
+def poster_detail(request, slug):
+    poster = get_object_or_404(Poster, slug=slug, is_published=True)
     return render(request, "venue/poster_detail.html", {
         "poster": poster,
         "is_past": not poster.schedule and poster.date < datetime.date.today(),
@@ -189,3 +197,12 @@ def booking(request):
     return render(request, "venue/booking.html", {
         "form": form, **page_meta("booking"), **breadcrumbs(("Бронирование", None)),
     })
+
+
+def page_not_found(request, exception=None):
+    return render(request, "404.html", {
+        "meta_title": "Страница не найдена (404) | Подземка",
+        "meta_description": "Такой страницы в Подземке нет. Перейдите на главную, выберите банкетный зал или посмотрите афишу событий.",
+        "hide_canonical": True,
+        "halls": Hall.objects.filter(is_active=True),
+    }, status=404)

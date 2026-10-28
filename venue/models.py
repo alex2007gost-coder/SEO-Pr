@@ -5,6 +5,8 @@ from django.db import models
 from django.urls import reverse
 from django.utils.formats import date_format
 
+from .utils import unique_slug
+
 
 DEFAULT_OG_IMAGE = "img/og/default.jpg"
 
@@ -22,15 +24,10 @@ class Hall(models.Model):
 
     name = models.CharField("Название", max_length=100)
 
-    # SEO-ЗАДАНИЕ (ЧПУ — человекопонятные URL):
-    # Сейчас залы открываются по адресу /halls/1/, /halls/2/ ... — это плохо для SEO.
-    # ПОДСКАЗКА: добавьте поле
-    #     slug = models.SlugField("URL", max_length=120, unique=True)
-    # затем: makemigrations -> migrate, заполните slug в админке (или через
-    # prepopulated_fields в admin.py), поменяйте маршрут в venue/urls.py на <slug:slug>
-    # и get_absolute_url() ниже. Хорошие адреса: /halls/depo/, /halls/tonnel/
-    # Будьте внимательны: unique=True на заполненной таблице требует миграции в 2 шага
-    # (или временно null=True / default) — разберитесь, как это сделать.
+    slug = models.SlugField(
+        "URL", max_length=120, unique=True, blank=True,
+        help_text="Латиницей, например depo. Если пусто — сформируется из названия",
+    )
 
     line_color = models.CharField(
         "Цвет линии (HEX)", max_length=7, default="#e4312b",
@@ -72,9 +69,13 @@ class Hall(models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = unique_slug(self, self.name)
+        super().save(*args, **kwargs)
+
     def get_absolute_url(self):
-        # ПОДСКАЗКА: после добавления slug замените pk=self.pk на slug=self.slug
-        return reverse("venue:hall_detail", kwargs={"pk": self.pk})
+        return reverse("venue:hall_detail", kwargs={"slug": self.slug})
 
     def features_list(self):
         return [f.strip() for f in self.features.splitlines() if f.strip()]
@@ -212,6 +213,10 @@ class Poster(models.Model):
     """Событие в афише: квиз, концерт, вечеринка — с конкретной датой."""
 
     title = models.CharField("Название", max_length=150)
+    slug = models.SlugField(
+        "URL", max_length=120, unique=True, blank=True,
+        help_text="Латиницей. Если пусто — сформируется из названия",
+    )
     topic = models.CharField("Тема", max_length=150, blank=True)
     organizer = models.CharField("Организатор", max_length=150, blank=True)
     date = models.DateField("Дата", help_text="Для регулярного события — дата первого проведения")
@@ -225,13 +230,6 @@ class Poster(models.Model):
     image = models.CharField("Картинка (путь в static)", max_length=200, blank=True)
     is_published = models.BooleanField("Опубликовано", default=True)
 
-    # SEO-ЗАДАНИЕ (ЧПУ): как и у залов, адрес события сейчас /afisha/1/.
-    # Хороший адрес: /afisha/kviz-60-sekund-kompyuternye-igry/ — добавьте slug.
-    # ПОДСКАЗКА: у события в афише есть всё для Schema.org Event:
-    # name, startDate, location (Place + PostalAddress), image, organizer, description.
-    # Такая разметка может дать расширенный сниппет с датой в выдаче.
-    # Для регулярных событий (schedule) в Schema.org есть eventSchedule (тип Schedule).
-
     class Meta:
         verbose_name = "Событие афиши"
         verbose_name_plural = "Афиша"
@@ -240,8 +238,13 @@ class Poster(models.Model):
     def __str__(self):
         return f"{self.title} ({self.date:%d.%m.%Y})"
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = unique_slug(self, self.title)
+        super().save(*args, **kwargs)
+
     def get_absolute_url(self):
-        return reverse("venue:poster_detail", kwargs={"pk": self.pk})
+        return reverse("venue:poster_detail", kwargs={"slug": self.slug})
 
     def og_image(self):
         return og_image_for(self.image)
