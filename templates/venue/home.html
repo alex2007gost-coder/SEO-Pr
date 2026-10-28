@@ -119,7 +119,6 @@
       <h2 class="section__title">Отзывы пассажиров</h2>
       {% if rating %}<p class="section__sub mono">★ {{ rating|floatformat:1 }} из 5 · {{ reviews_count }} отзыва</p>{% endif %}
     </div>
-    {# SEO-ЗАДАНИЕ (звёзды в сниппете): разметьте рейтинг через Schema.org AggregateRating. #}
     <div class="reviews">
       {% for r in reviews %}
         <blockquote class="review">
@@ -139,7 +138,6 @@
     <div class="section__head">
       <h2 class="section__title">Частые вопросы</h2>
     </div>
-    {# SEO-ЗАДАНИЕ: добавьте JSON-LD FAQPage для этого блока (в {% block extra_head %}). #}
     <div class="faq">
       {% for q in faqs %}
         <details class="faq__item">

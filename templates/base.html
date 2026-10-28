@@ -1,4 +1,4 @@
-{% load static %}<!DOCTYPE html>
+{% load static jsonld %}<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="utf-8">
@@ -40,10 +40,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Manrope:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
-  {# SEO-ЗАДАНИЕ (микроразметка): сюда удобно положить JSON-LD Schema.org   #}
-  {# для организации (EventVenue / LocalBusiness): название, адрес, телефон,#}
-  {# часы работы, координаты, ссылки на соцсети (sameAs).                    #}
-  {# Данные уже есть в шаблоне: {{ site.name }}, {{ site.address }} и т.д.   #}
+  {% organization_jsonld %}
+  {% breadcrumbs_jsonld %}
+  {% for item in page_schema %}{% jsonld item %}{% endfor %}
   {% block extra_head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">

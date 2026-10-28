@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
 from .forms import BookingForm
+from . import schema
 from .models import FAQ, EventFormat, Hall, MenuPackage, Poster, Review
 
 META = {
@@ -52,6 +53,10 @@ META = {
 }
 
 
+def base_url(request):
+    return request.build_absolute_uri("/").rstrip("/")
+
+
 def breadcrumbs(*items):
     return {"breadcrumbs": [{"name": "Главная", "url": reverse("venue:home")}] + [
         {"name": name, "url": url} for name, url in items
@@ -65,6 +70,7 @@ def page_meta(name):
 
 def home(request):
     reviews = Review.objects.filter(is_published=True)
+    faqs = FAQ.objects.all()
     context = {
         "halls": Hall.objects.filter(is_active=True),
         "formats": EventFormat.objects.all()[:6],
@@ -72,7 +78,9 @@ def home(request):
         "reviews": reviews[:6],
         "rating": reviews.aggregate(avg=Avg("rating"))["avg"],
         "reviews_count": reviews.count(),
-        "faqs": FAQ.objects.all(),
+        "faqs": faqs,
+        "schema_reviews": reviews,
+        "page_schema": [schema.faq_page(faqs)] if faqs else [],
         "posters": upcoming_posters()[:6],
         "form": BookingForm(),
         **page_meta("home"),
@@ -138,13 +146,16 @@ def poster_detail(request, slug):
         "meta_description": poster.get_meta_description(),
         "og_image": poster.og_image(),
         "og_image_alt": poster.title,
+        "page_schema": [schema.event(poster, base_url(request))],
         **breadcrumbs(("Афиша", reverse("venue:poster_list")), (poster.title, None)),
     })
 
 
 def menu(request):
+    packages = MenuPackage.objects.all()
     return render(request, "venue/menu.html", {
-        "packages": MenuPackage.objects.all(),
+        "packages": packages,
+        "page_schema": [schema.menu(packages, base_url(request))] if packages else [],
         **page_meta("menu"),
         **breadcrumbs(("Банкетное меню", None)),
     })

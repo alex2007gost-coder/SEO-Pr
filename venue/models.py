@@ -148,9 +148,6 @@ class Review(models.Model):
     created_at = models.DateField("Дата")
     is_published = models.BooleanField("Опубликован", default=True)
 
-    # ПОДСКАЗКА: отзывы с оценками — отличный повод для микроразметки
-    # Schema.org AggregateRating / Review (звёздочки в сниппете).
-
     class Meta:
         verbose_name = "Отзыв"
         verbose_name_plural = "Отзывы"
@@ -164,8 +161,6 @@ class FAQ(models.Model):
     question = models.CharField("Вопрос", max_length=255)
     answer = models.TextField("Ответ")
     order = models.PositiveSmallIntegerField("Порядок", default=0)
-
-    # ПОДСКАЗКА: вопросы-ответы можно разметить через Schema.org FAQPage (JSON-LD).
 
     class Meta:
         verbose_name = "Вопрос-ответ"

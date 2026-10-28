@@ -114,6 +114,10 @@ SITE_INFO = {
     "country": "RU",
     "postal_code": "672027",
     "hours": "Ежедневно, 12:00 — 02:00",
+    "opens": "12:00",
+    "closes": "02:00",
+    "price_range": "₽₽",
+    "max_guests": 350,
     # Секретная фраза для бара: назвать бармену и получить скидку
     "bar_secret": "Дайте ходу",
     "bar_discount": 14,
